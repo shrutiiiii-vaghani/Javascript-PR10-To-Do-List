@@ -1,0 +1,140 @@
+<br><br><br><br>
+<h2 style="text-align: center;">Enter record:-</h2><br>
+<table border="2" cellpadding="20" style="margin: auto;background-color: #C0C0C0;">
+    <input type="hidden" id="editid">
+    <tr>
+        <td><input type="text" id="name" placeholder="Enter Your Hobby" style="padding: 10px 15px;font-size: 18px;">
+        </td>
+        <td>
+            <input type="button" style="background-color: #A6ACAF" value="+" id="addbtn" onclick="save()">
+            <input type="button" value="edit" id="editbtn" onclick="save()">
+        </td>
+    </tr>
+</table><br><br>
+<h2 style="text-align: center;">record:-</h2><br>
+<table border="2" cellpadding="20" style="margin: auto;background-color: #808080;">
+    <tr>
+        <td style="font-size: 22px;font-weight: bold;">Hobby</td>
+        <td style="font-size: 22px;font-weight: bold;">Action</td>
+    </tr>
+    <tbody id="record">
+
+    </tbody>
+    <tfoot>
+        <tr align="center">
+            <td colspan="2">
+                <input type="button" onclick="cleardata()" id="clear" value="cleardata"
+                    style="background-color: rgb(227, 220, 213);padding: 10px 15px;">
+            </td>
+        </tr>
+    </tfoot>
+</table><br><br>
+
+
+
+<script type="text/javascript">
+
+    let data = [];
+
+    const viewdata = () => {
+
+        document.getElementById('addbtn').style.display = "block";
+        document.getElementById('editbtn').style.display = "none";
+      
+        let val = (JSON.parse(localStorage.getItem('user')) == null) ? [] : JSON.parse(localStorage.getItem('user'));
+        let tbl = "";
+        val.map((v) => {
+            const { userid, name } = v;
+            tbl += `
+                  <tr>
+                     <td style="font-size: 20px;background-color:#C0C0C0">${name}</td>
+                     <td>
+                        <button style="padding:10px 15px;background-color:#99A3A4" onclick="deletedata(${userid})">Delete</button>
+                        <button  style="padding:10px 15px;background-color:#99A3A4 " onclick="editdata(${userid})">Edit</button>
+                     </td>
+                  </tr>
+               `
+        })
+        document.getElementById('record').innerHTML = tbl;
+    }
+    viewdata();
+
+    const save = () => {
+
+        let userid = document.getElementById('editid').value;
+
+        let name = document.getElementById('name').value;
+
+        let obj = {
+            userid: Math.floor(Math.random() * 10000),
+            name: name,
+        }
+
+        if (userid) {
+            let alldata = JSON.parse(localStorage.getItem('user'));
+
+            for (let i in alldata) {
+                if (alldata[i].userid == userid) {
+                    alldata[i].name = name;
+                }
+                localStorage.setItem('user', JSON.stringify(alldata));
+
+            }
+            alert("succesfully edited");
+            document.getElementById('editid').value = "";
+            viewdata();
+        } else {
+            if (localStorage.getItem('user') === null || localStorage.getItem('user') === undefined) {
+                data.push(obj);
+                localStorage.setItem('user', JSON.stringify(data));
+            } else {
+                let val = JSON.parse(localStorage.getItem('user'));
+                val.push(obj);
+                localStorage.setItem('user', JSON.stringify(val));
+            }
+
+            alert("succesfully created");
+            viewdata();
+        }
+        document.getElementById('name').value = "";
+    }
+
+    const deletedata = (id) => {
+        let alldata = JSON.parse(localStorage.getItem('user'));
+
+        let ans = alldata.filter((val) => {
+            return val.userid != id;
+        })
+        localStorage.setItem('user', JSON.stringify(ans));
+        alert("user succesfully deleted");
+        viewdata();
+    }
+
+    const editdata = (id) => {
+        document.getElementById('addbtn').style.display = "none";
+        document.getElementById('editbtn').style.display = "block";
+
+        let val = JSON.parse(localStorage.getItem('user'));
+
+        let ans = val.filter((v) => {
+            return v.userid == id;
+        })
+
+        document.getElementById('name').value = ans[0].name;
+        document.getElementById('editid').value = ans[0].userid;
+
+    }
+
+    const cleardata = () => {
+            let data = JSON.parse(localStorage.getItem('user'));
+
+            let ans = data.filter((val) => {
+                return val.name.value = "";
+            });
+
+            localStorage.setItem('user', JSON.stringify(ans));
+            alert("All Users Sucessfully Deleted");
+            viewdata();
+    }
+
+</script>
